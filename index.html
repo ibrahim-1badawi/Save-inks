@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>روابطي المفضلة</title>
+  <style>
+    /* إعدادات عامة */
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      text-align: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* العنوان الرئيسي */
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+      margin-bottom: 20px;
+    }
+
+    /* نموذج الإدخال */
+    .add-link form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .add-link input,
+    .add-link select,
+    .add-link button {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    .add-link input,
+    .add-link select {
+      width: 200px;
+      background-color: rgba(42, 82, 152, 0.7);
+      color: white;
+      backdrop-filter: blur(5px);
+    }
+
+    .add-link input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .add-link button {
+      background-color: #40e0d0;
+      color: black;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-weight: bold;
+    }
+
+    .add-link button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #40e0d0;
+    }
+
+    /* عرض الروابط */
+    #links-display {
+      margin-top: 30px;
+    }
+
+    .category {
+      margin-bottom: 30px;
+    }
+
+    .category h2 {
+      font-size: 1.8rem;
+      text-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff;
+      margin-bottom: 15px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .category h2:after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #40e0d0, transparent);
+    }
+
+    .link-card {
+      display: inline-block;
+      background-color: rgba(59, 59, 152, 0.7);
+      color: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 10px;
+      width: 250px;
+      text-align: right;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+      backdrop-filter: blur(5px);
+    }
+
+    .link-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .link-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+      color: #40e0d0;
+    }
+
+    .link-card p {
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .link-card a {
+      color: #40e0d0;
+      text-decoration: none;
+      display: block;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      word-break: break-all;
+    }
+
+    .link-card a:hover {
+      text-decoration: underline;
+    }
+
+    .link-card .delete-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+
+    .link-card .delete-btn:hover {
+      background-color: #ff1a1a;
+      transform: scale(1.1);
+    }
+
+    /* تصميم متجاوب */
+    @media (max-width: 768px) {
+      .add-link form {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .add-link input,
+      .add-link select,
+      .add-link button {
+        width: 90%;
+        max-width: 300px;
+      }
+      
+      .link-card {
+        width: 80%;
+        max-width: 300px;
+      }
+    }
+
+    /* رسالة عند عدم وجود روابط */
+    .empty-message {
+      font-size: 1.2rem;
+      margin: 30px 0;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>روابطي المفضلة 🧠✨</h1>
+    </header>
+    <main>
+      <section class="add-link">
+        <form id="link-form">
+          <input type="text" id="site-name" placeholder="اسم الموقع" required>
+          <input type="url" id="site-url" placeholder="رابط الموقع" required>
+          <input type="text" id="site-description" placeholder="وصف الموقع" required>
+          <select id="site-category" required>
+            <option value="" disabled selected>اختر التصنيف</option>
+            <option value="صناعة الصور">صناعة الصور</option>
+            <option value="صناعة الفيديو">صناعة الفيديو</option>
+            <option value="موقع شات ذكي">موقع شات ذكي</option>
+            <option value="أدوات تصميم">أدوات تصميم</option>
+          </select>
+          <button type="submit" class="add-button">إضافة الرابط</button>
+        </form>
+      </section>
+      <section id="links-display">
+        <!-- سيتم عرض الروابط هنا -->
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // تخزين الروابط في localStorage
+    const linkForm = document.getElementById('link-form');
+    const linksDisplay = document.getElementById('links-display');
+
+    let links = JSON.parse(localStorage.getItem('links')) || {};
+
+    function saveLinks() {
+      localStorage.setItem('links', JSON.stringify(links));
+    }
+
+    function getFavicon(url) {
+      try {
+        const domain = new URL(url).hostname;
+        return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function renderLinks() {
+      linksDisplay.innerHTML = '';
+      
+      if (Object.keys(links).length === 0) {
+        linksDisplay.innerHTML = '<p class="empty-message">لا توجد روابط محفوظة. أضف روابطك المفضلة لتظهر هنا.</p>';
+        return;
+      }
+      
+      for (const category in links) {
+        const categorySection = document.createElement('div');
+        categorySection.classList.add('category');
+        categorySection.innerHTML = `<h2>${category}</h2>`;
+        
+        const linksContainer = document.createElement('div');
+        for (const link of links[category]) {
+          const favicon = getFavicon(link.url);
+          const faviconHtml = favicon ? `<img src="${favicon}" alt="" style="height: 16px; width: 16px; margin-left: 5px; vertical-align: middle;">` : '';
+          
+          const linkCard = document.createElement('div');
+          linkCard.classList.add('link-card');
+          linkCard.innerHTML = `
+            <h3>${faviconHtml}${link.name}</h3>
+            <p>${link.description}</p>
+            <a href="${link.url}" target="_blank">${link.url}</a>
+            <button class="delete-btn" data-category="${category}" data-url="${link.url}">🗑️</button>
+          `;
+          linksContainer.appendChild(linkCard);
+        }
+        categorySection.appendChild(linksContainer);
+        linksDisplay.appendChild(categorySection);
+      }
+    }
+
+    linkForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('site-name').value;
+      const url = document.getElementById('site-url').value;
+      const description = document.getElementById('site-description').value;
+      const category = document.getElementById('site-category').value;
+      
+      if (!links[category]) {
+        links[category] = [];
+      }
+      
+      // تحقق من عدم وجود تكرار للرابط
+      const isDuplicate = links[category].some(link => link.url === url);
+      if (isDuplicate) {
+        alert('هذا الرابط موجود بالفعل في هذه الفئة!');
+        return;
+      }
+      
+      links[category].push({ name, url, description });
+      saveLinks();
+      renderLinks();
+      
+      linkForm.reset();
+    });
+
+    linksDisplay.addEventListener('click', (e) => {
+      if (e.target.classList.contains('delete-btn')) {
+        const category = e.target.dataset.category;
+        const url = e.target.dataset.url;
+        
+        if (confirm('هل أنت متأكد من حذف هذا الرابط؟')) {
+          links[category] = links[category].filter(link => link.url !== url);
+          if (links[category].length === 0) {
+            delete links[category];
+          }
+          
+          saveLinks();
+          renderLinks();
+        }
+      }
+    });
+
+    // عرض الروابط عند تحميل الصفحة
+    renderLinks();
+  </script>
+</body>
+</html>
